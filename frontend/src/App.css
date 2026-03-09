@@ -1,0 +1,15 @@
+/* App.css — App-level overrides */
+/* All global styles are handled in index.css */
+
+/* Ensure the App wraps correctly */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Push footer to the bottom on short pages */
+.app-container>main,
+.app-container>.page-content {
+  flex: 1;
+}
