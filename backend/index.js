@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import onboardingRoutes from './src/routes/onboardingRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
 import leadRoutes from './src/routes/leadRoutes.js';
+import aiRoutes from './src/routes/aiRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -82,6 +83,7 @@ mongoose.connection.on('error', err => {
 app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/', (req, res) => {
     const states = {

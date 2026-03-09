@@ -43,26 +43,13 @@ const AIAssistant = () => {
         setIsLoading(true);
 
         try {
-            const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-            if (!apiKey) {
-                setMessages(prev => [...prev, { role: 'assistant', content: 'API Key not configured. Please add VITE_OPENROUTER_API_KEY to your .env file.' }]);
-                setIsLoading(false);
-                return;
-            }
-
-            const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-                model: 'openrouter/free', // Uses the best available free model dynamically
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const response = await axios.post(`${apiUrl}/ai/chat`, {
                 messages: [
                     { role: 'system', content: SYSTEM_PROMPT },
                     ...messages.map(m => ({ role: m.role, content: m.content })),
                     userMessage
                 ]
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${apiKey}`,
-                    'HTTP-Referer': window.location.origin,
-                    'X-Title': 'Vithartha Assistant'
-                }
             });
 
             const aiReply = response.data.choices[0].message.content;
