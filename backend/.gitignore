@@ -3,8 +3,6 @@
 .env.local
 .env.development
 .env.production
-backend/.env
-frontend/.env
 
 # Dependencies
 node_modules/
@@ -15,12 +13,6 @@ logs
 *.log
 npm-debug.log*
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-
-# Build outputs
-dist/
-build/
+# Editor directories
+.vscode/
+.idea/
