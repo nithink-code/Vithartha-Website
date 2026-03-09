@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/chat', async (req, res) => {
     try {
         const { messages } = req.body;
-        const apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
+        let apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
 
         if (!apiKey) {
             return res.status(500).json({
@@ -15,14 +15,20 @@ router.post('/chat', async (req, res) => {
             });
         }
 
+        // Sanitize the key: clean whitespace and remove accidental 'Bearer ' prefix
+        apiKey = apiKey.trim();
+        if (apiKey.startsWith('Bearer ')) {
+            apiKey = apiKey.replace('Bearer ', '').trim();
+        }
+
         const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
             model: 'mistralai/mistral-7b-instruct:free',
             messages: messages
         }, {
             headers: {
-                'Authorization': `Bearer ${apiKey.trim()}`,
-                'HTTP-Referer': 'https://vithartha-website.vercel.app',
-                'X-Title': 'Vithartha Assistant'
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://vithartha.com',
+                'X-Title': 'Vithartha AI'
             }
         });
 
