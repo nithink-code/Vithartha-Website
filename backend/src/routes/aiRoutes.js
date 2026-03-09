@@ -13,22 +13,32 @@ router.post('/chat', async (req, res) => {
         }
 
         const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-            model: 'openrouter/free',
+            model: 'mistralai/mistral-7b-instruct:free',
             messages: messages
         }, {
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
+                'Authorization': `Bearer ${apiKey.trim()}`,
+                'HTTP-Referer': 'https://vithartha-website.vercel.app',
                 'X-Title': 'Vithartha Assistant'
             }
         });
 
         res.json(response.data);
     } catch (error) {
-        console.error('AI Proxy Error:', error.response?.data || error.message);
+        const errorData = error.response?.data;
+        console.error('AI Proxy Error:', errorData || error.message);
+
+        if (error.response?.status === 401) {
+            return res.status(401).json({
+                error: 'AI API Key Rejected',
+                message: 'The OpenRouter API key in Vercel settings is invalid or has expired.'
+            });
+        }
+
         res.status(error.response?.status || 500).json({
-            error: 'Failed to fetch AI response',
-            details: error.response?.data || error.message
+            error: 'AI Assistant Error',
+            message: 'Encountered an error with the AI service.',
+            debug: errorData || error.message
         });
     }
 });

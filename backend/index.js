@@ -47,7 +47,8 @@ app.use(morgan('dev'));
 
 // Security Headers for Google OAuth
 app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    // Reverting to unsafe-none for maximum compatibility with Google OAuth postMessage flows
+    res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     next();
 });
