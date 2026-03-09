@@ -21,15 +21,25 @@ const ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5174',
     'http://127.0.0.1:5175',
-    process.env.FRONTEND_URL, // Production frontend URL
+    process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 // Middleware
 app.use(cors({
-    origin: ALLOWED_ORIGINS,
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl) or if in allowed origins
+        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app')) {
+            callback(null, true);
+        } else {
+            console.error(`CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 app.use(express.json());
 app.use(morgan('dev'));
