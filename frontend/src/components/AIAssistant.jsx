@@ -56,7 +56,8 @@ const AIAssistant = () => {
             setMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
         } catch (error) {
             console.error('Chat error:', error);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error while processing your request. Please try again later.' }]);
+            const errorMessage = error.response?.data?.message || 'Sorry, I encountered an error while processing your request. Please try again later.';
+            setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
         } finally {
             setIsLoading(false);
         }

@@ -6,10 +6,13 @@ const router = express.Router();
 router.post('/chat', async (req, res) => {
     try {
         const { messages } = req.body;
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
 
         if (!apiKey) {
-            return res.status(500).json({ error: 'AI API Key not configured on server' });
+            return res.status(500).json({
+                error: 'AI Config Error',
+                message: 'OPENROUTER_API_KEY is missing from Vercel environment variables.'
+            });
         }
 
         const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
