@@ -3,6 +3,10 @@ import axios from 'axios';
 
 const router = express.Router();
 
+router.get('/ping', (req, res) => {
+    res.json({ message: 'AI Route is working' });
+});
+
 router.post('/chat', async (req, res) => {
     try {
         const { messages } = req.body;
