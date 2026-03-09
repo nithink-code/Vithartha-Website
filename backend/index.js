@@ -26,23 +26,17 @@ const ALLOWED_ORIGINS = [
 
 // Middleware
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (Postman, curl) or from allowed origins
-        if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error(`CORS: origin ${origin} not allowed`));
-        }
-    },
+    origin: ALLOWED_ORIGINS,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Cross-Origin headers — use 'unsafe-none' so Google OAuth
-// popup/redirect flows and postMessage are NOT blocked in development.
+// Security Headers for Google OAuth
 app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'unsafe-none');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     next();
 });
