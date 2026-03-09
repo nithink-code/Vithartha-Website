@@ -80,9 +80,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadRoutes);
 
 app.get('/', (req, res) => {
+    const states = {
+        0: 'Disconnected',
+        1: 'Connected',
+        2: 'Connecting',
+        3: 'Disconnecting'
+    };
     res.json({
         message: 'Vithartha Consulting Backend API is Running',
-        database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+        database: states[mongoose.connection.readyState] || 'Unknown',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
     });
 });
 
