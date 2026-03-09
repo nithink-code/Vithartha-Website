@@ -32,9 +32,10 @@ router.post('/chat', async (req, res) => {
         console.error('AI Proxy Error:', errorData || error.message);
 
         if (error.response?.status === 401) {
+            const detail = error.response?.data?.error?.message || 'Invalid or expired API key.';
             return res.status(401).json({
                 error: 'AI API Key Rejected',
-                message: 'The OpenRouter API key in Vercel settings is invalid or has expired.'
+                message: `OpenRouter Error: ${detail}`
             });
         }
 
