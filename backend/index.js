@@ -56,23 +56,20 @@ app.use((req, res, next) => {
 const MONGO_URI = process.env.MONGODB_URI;
 
 if (!MONGO_URI) {
-    console.error('MONGODB_URI is not defined in .env');
-    process.exit(1);
+    console.error('CRITICAL: MONGODB_URI is not defined in environment variables.');
+} else {
+    // Log connection attempts (but hide password for security)
+    const maskedUri = MONGO_URI.replace(/:([^@]+)@/, ':****@');
+    console.log(`Connecting to MongoDB...`);
+
+    mongoose.connect(MONGO_URI, {
+        serverSelectionTimeoutMS: 8000,
+    })
+        .then(() => console.log('✅ Connected to MongoDB Atlas'))
+        .catch(err => {
+            console.error('MongoDB Connection Error:', err.message);
+        });
 }
-
-// Log connection attempts (but hide password for security)
-const maskedUri = MONGO_URI.replace(/:([^@]+)@/, ':****@');
-
-mongoose.connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 5000, // Show error after 5s instead of 30s
-})
-    .then(() => console.log('✅ Connected to MongoDB Atlas'))
-    .catch(err => {
-        console.error('MongoDB Connection Error:', err.message);
-        if (err.message.includes('IP not whitelisted')) {
-            console.error('👉 TIP: Go to MongoDB Atlas > Network Access and add your current IP address.');
-        }
-    });
 
 // Debugging connection state
 mongoose.connection.on('error', err => {
