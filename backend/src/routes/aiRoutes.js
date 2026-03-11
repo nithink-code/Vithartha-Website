@@ -7,10 +7,24 @@ router.get('/ping', (req, res) => {
     res.json({ message: 'AI Route is working' });
 });
 
+router.get('/debug-env', (req, res) => {
+    res.json({
+        OPENROUTER_API_KEY_PRESENT: !!process.env.OPENROUTER_API_KEY,
+        VITE_OPENROUTER_API_KEY_PRESENT: !!process.env.VITE_OPENROUTER_API_KEY,
+        NODE_ENV: process.env.NODE_ENV,
+        message: 'Debug route for checking environment variables. Do not expose actual keys.'
+    });
+});
+
 router.post('/chat', async (req, res) => {
     try {
         const { messages } = req.body;
         let apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
+
+        console.log("Checking AI Config:");
+        console.log("OPENROUTER_API_KEY present:", !!process.env.OPENROUTER_API_KEY);
+        console.log("VITE_OPENROUTER_API_KEY present:", !!process.env.VITE_OPENROUTER_API_KEY);
+        console.log("NODE_ENV:", process.env.NODE_ENV);
 
         if (!apiKey) {
             return res.status(500).json({
