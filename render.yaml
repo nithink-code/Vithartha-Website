@@ -1,0 +1,44 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: vithartha-backend
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: FRONTEND_URL
+        value: https://vithartha-frontend.onrender.com
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+
+  # Frontend Static Site
+  - type: web
+    name: vithartha-frontend
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    rootDir: frontend
+    envVars:
+      - key: VITE_API_URL
+        value: https://vithartha-backend.onrender.com/api # Matches backend
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+      - key: VITE_OPENROUTER_API_KEY
+        sync: false

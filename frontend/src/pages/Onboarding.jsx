@@ -74,7 +74,7 @@ const Onboarding = () => {
 
     const handleSubmit = async () => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.post(`${apiUrl}/onboarding/recommend`, formData);
             if (response.data.success) {
                 navigate('/recommendations', { state: { recommendations: response.data.data, userData: formData } });

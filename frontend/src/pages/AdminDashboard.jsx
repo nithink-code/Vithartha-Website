@@ -91,7 +91,7 @@ const AdminDashboard = () => {
 
     const fetchLeads = async () => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.get(`${apiUrl}/leads`);
             setLeads(response.data);
         } catch (error) {
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
     const handleApprove = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.patch(`${apiUrl}/leads/${id}`, { status: 'Completed' });
             if (response.data) {
                 toast.success('Service request approved & marked as Completed');

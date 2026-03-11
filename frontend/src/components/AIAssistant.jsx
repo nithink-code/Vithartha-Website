@@ -43,7 +43,7 @@ const AIAssistant = () => {
         setIsLoading(true);
 
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.post(`${apiUrl}/ai/chat`, {
                 messages: [
                     { role: 'system', content: SYSTEM_PROMPT },

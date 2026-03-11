@@ -100,7 +100,7 @@ const AdminServicesView = () => {
 
     const fetchLeads = async () => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.get(`${apiUrl}/leads`);
             setLeads(response.data);
         } catch (error) {
@@ -116,7 +116,7 @@ const AdminServicesView = () => {
     const handleApprove = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.patch(`${apiUrl}/leads/${id}`, { status: 'Completed' });
             if (response.data) {
                 toast.success('Service approved & marked as Completed');
@@ -668,7 +668,7 @@ const Recommendations = () => {
                                     setIsSubmitting(true);
                                     try {
                                         const user = JSON.parse(localStorage.getItem('user'));
-                                        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                                        const apiUrl = import.meta.env.VITE_API_URL;
                                         await axios.post(`${apiUrl}/leads`, { user: user?._id || user?.id || null, name: interestData.name, email: interestData.email, serviceName: selectedService.title, cost: 1000 });
                                         toast.success("Interest recorded! Our advisor will contact you soon.");
                                         setSelectedService(null);

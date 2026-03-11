@@ -102,7 +102,7 @@ const UserDashboard = () => {
         const fetchUserServices = async () => {
             try {
                 const userId = storedUser?._id || storedUser?.id;
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const apiUrl = import.meta.env.VITE_API_URL;
                 const response = await axios.get(`${apiUrl}/leads?userId=${userId}`);
                 setLeads(response.data);
             } catch (error) {
@@ -123,7 +123,7 @@ const UserDashboard = () => {
 
     const handleUploadDocument = async (leadId) => {
         try {
-            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            const apiUrl = import.meta.env.VITE_API_URL;
             // Mock document upload - just adding an entry to the documents array
             const response = await axios.patch(`${apiUrl}/leads/${leadId}`, {
                 $push: { documents: { name: 'Business_Proof.pdf', url: '#' } }

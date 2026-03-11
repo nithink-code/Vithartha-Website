@@ -29,7 +29,7 @@ const ALLOWED_ORIGINS = [
 app.use(cors({
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl) or if in allowed origins
-        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app')) {
+        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) {
             callback(null, true);
         } else {
             console.error(`CORS blocked for origin: ${origin}`);
@@ -98,13 +98,11 @@ app.get('/', (req, res) => {
     });
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on http://localhost:${PORT}`);
-    });
-}
+// Start listening (Always for Render)
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
 
-// Export for Vercel
+// Export for Vercel (optional, good to keep)
 export default app;
 
