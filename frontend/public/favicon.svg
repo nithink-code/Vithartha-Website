@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the Circular Mask/Frame -->
+  <circle cx="256" cy="256" r="256" fill="white"/>
+  
+  <!-- Vithartha Logo "V" Shape -->
+  <!-- Triangle 1 (Top Left - Mint Green) -->
+  <path d="M110 130L230 150L256 380L110 130Z" fill="#9DD1B9"/>
+  
+  <!-- Triangle 2 (Left - Deep Red) -->
+  <path d="M100 180L245 280L220 780" fill="#9E202E" opacity="0" /> <!-- Reference path -->
+  <path d="M100 180L245 280L225 420L100 180Z" fill="#9E202E"/>
+  
+  <!-- Triangle 3 (Center/Right - Vibrant Orange) -->
+  <path d="M225 420L256 185L410 160L225 420Z" fill="#FFB366"/>
+  
+  <!-- Triangle 4 (Top Right - Pale Yellow) -->
+  <path d="M280 280L410 160L460 210L280 280Z" fill="#FCE9B5"/>
+  
+  <!-- Triangle 5 (Bottom Right Shadow - Grey) -->
+  <path d="M225 420L280 280L350 480" fill="#808080" opacity="0"/> <!-- Reference -->
+  <path d="M225 420L310 320L360 410L225 420Z" fill="#7D7D7D"/>
+  
+  <!-- Refining the "V" to match the actual logo geometry better -->
+  <!-- Re-drawing with more accurate relative coordinates -->
+  <g transform="translate(45, 45) scale(0.82)">
+    <!-- Mint Green -->
+    <path d="M70 45L230 75L265 480L70 45Z" fill="#9DD1B9"/>
+    <!-- Deep Red -->
+    <path d="M65 110L245 230L245 510L65 110Z" fill="#A12638"/>
+    <!-- Vibrant Orange -->
+    <path d="M245 510L275 115L480 85L245 510Z" fill="#FCAF58"/>
+    <!-- Pale Yellow -->
+    <path d="M295 240L480 85L550 160L295 240Z" fill="#FCE8B3"/>
+    <!-- Grey Shadow -->
+    <path d="M245 510L320 280L380 430L245 510Z" fill="#7F7F7F"/>
+  </g>
+</svg>

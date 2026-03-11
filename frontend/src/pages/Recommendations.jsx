@@ -361,32 +361,40 @@ const AdminServicesView = () => {
             <AnimatePresence>
                 {selectedLead && (
                     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', padding: '1rem' }}>
-                        <motion.div initial={{ opacity: 0, scale: 0.95, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 14 }}
-                            className="rec-modal-content"
-                            style={{ width: '100%', maxWidth: '420px', background: 'linear-gradient(135deg, #151515 0%, #000000 100%)', border: '1px solid rgba(67, 97, 238, 0.2)', position: 'relative' }}>
-                            <button onClick={() => setSelectedLead(null)} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}><X size={18} /></button>
+                         <motion.div initial={{ opacity: 0, scale: 0.95, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 14 }}
+                             className="rec-modal-content"
+                             style={{ 
+                                 width: '100%', maxWidth: '500px', 
+                                 background: 'linear-gradient(135deg, #151515 0%, #000000 100%)', 
+                                 border: '1px solid rgba(67, 97, 238, 0.3)', 
+                                 position: 'relative',
+                                 padding: '1.5rem 2rem',
+                                 borderRadius: '28px',
+                                 boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+                             }}>
+                             <button onClick={() => setSelectedLead(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}><X size={22} /></button>
 
-                            <div style={{ textAlign: 'center', marginBottom: '1.4rem' }}>
-                                <div style={{ width: '50px', height: '50px', borderRadius: '16px', background: 'linear-gradient(135deg, #4361ee, #7c3aed)', margin: '0 auto 0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', fontWeight: 900, color: 'white', boxShadow: '0 6px 18px rgba(67, 97, 238, 0.25)' }}>
-                                    {selectedLead.name?.[0]}
-                                </div>
-                                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: 0 }}>{selectedLead.name}</h3>
-                                <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.4rem', fontSize: '0.8rem' }}>Service Details</p>
-                            </div>
+                             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                 <div style={{ width: '60px', height: '60px', borderRadius: '18px', background: 'linear-gradient(135deg, #4361ee, #7c3aed)', margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 900, color: 'white', boxShadow: '0 10px 25px rgba(67, 97, 238, 0.3)' }}>
+                                     {selectedLead.name?.[0]}
+                                 </div>
+                                 <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>{selectedLead.name}</h3>
+                                 <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.4rem', fontSize: '0.85rem', fontWeight: 500 }}>Lead Service Details</p>
+                             </div>
 
-                            <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.2rem' }}>
-                                {[
-                                    { label: 'Service', value: selectedLead.serviceName },
-                                    { label: 'Applied On', value: new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) },
-                                    { label: 'Status', value: selectedLead.status === 'Open' ? 'Pending' : selectedLead.status },
-                                    { label: 'Contact', value: selectedLead.email },
-                                ].map((item, idx) => (
-                                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                                        <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</label>
-                                        <div style={{ fontWeight: 700, fontSize: '0.82rem', wordBreak: 'break-word' }}>{item.value}</div>
-                                    </div>
-                                ))}
-                            </div>
+                             <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem', padding: '1.2rem', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                 {[
+                                     { label: 'Service Engagement', value: selectedLead.serviceName },
+                                     { label: 'Submission Date', value: new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) },
+                                     { label: 'Process Status', value: selectedLead.status === 'Open' ? 'Pending Approval' : selectedLead.status },
+                                     { label: 'Contact Email', value: selectedLead.email },
+                                 ].map((item, idx) => (
+                                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                         <label style={{ fontSize: '0.65rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item.label}</label>
+                                         <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#f0f0f0', lineHeight: 1.4 }}>{item.value}</div>
+                                     </div>
+                                 ))}
+                             </div>
 
                             <div style={{ marginBottom: '1.2rem' }}>
                                 <label style={{ fontSize: '0.62rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '0.6rem' }}>
@@ -406,16 +414,18 @@ const AdminServicesView = () => {
                                 </div>
                             </div>
 
-                            {selectedLead.status !== 'Completed' ? (
-                                <button onClick={() => handleApprove(selectedLead._id)}
-                                    style={{ width: '100%', padding: '0.8rem', background: '#10b981', border: 'none', color: 'white', borderRadius: '12px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', boxShadow: '0 6px 18px rgba(16, 185, 129, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                    <CheckCircle size={16} /> Approve Service Request
-                                </button>
-                            ) : (
-                                <div style={{ width: '100%', padding: '0.8rem', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', borderRadius: '12px', fontWeight: 800, fontSize: '0.85rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                                    <CheckCircle size={16} /> Already Completed
-                                </div>
-                            )}
+                             {selectedLead.status !== 'Completed' ? (
+                                 <button onClick={() => handleApprove(selectedLead._id)}
+                                     style={{ width: '100%', padding: '1.2rem', background: '#10b981', border: 'none', color: 'white', borderRadius: '18px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.3s' }}
+                                     onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                     onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+                                     <CheckCircle size={20} /> Approve Service Request
+                                 </button>
+                             ) : (
+                                 <div style={{ width: '100%', padding: '1.2rem', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', borderRadius: '18px', fontWeight: 800, fontSize: '1rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                                     <CheckCircle size={20} /> Service Completed
+                                 </div>
+                             )}
                         </motion.div>
                     </div>
                 )}
@@ -640,12 +650,12 @@ const Recommendations = () => {
                     <div className="rec-detail-modal" style={{ position: 'fixed', inset: 0, zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
                         <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
                             className="rec-modal-content"
-                            style={{ background: 'var(--card-bg)', width: '100%', maxWidth: '520px', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', overflow: 'hidden', position: 'relative', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }}>
+                            style={{ background: 'var(--card-bg)', width: '100%', maxWidth: '680px', borderRadius: '40px', border: '1px solid var(--border)', overflow: 'hidden', position: 'relative', boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)' }}>
                             <button onClick={() => setSelectedService(null)}
-                                style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--text)', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-                                <X size={18} />
+                                style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'var(--text)', cursor: 'pointer', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
+                                <X size={20} />
                             </button>
-                            <div style={{ padding: 'clamp(1.2rem, 6vw, 2.5rem)' }}>
+                            <div style={{ padding: '4rem 4.5rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem' }}>
                                     <div style={{ padding: '0.2rem 0.6rem', background: (categoryColors[selectedService.category] || categoryColors['Advisory']).bg, color: (categoryColors[selectedService.category] || categoryColors['Advisory']).color, borderRadius: 'var(--radius-full)', fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase' }}>
                                         {selectedService.category}
@@ -653,14 +663,14 @@ const Recommendations = () => {
                                     <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--text)', margin: 0 }}>{selectedService.title}</h2>
                                 </div>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.2rem' }}>{selectedService.description}</p>
-                                <div className="fee-box" style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', padding: '1rem 1.2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', marginBottom: '1.2rem' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)' }}>FEE:</span>
-                                        <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#10b981' }}>₹1,000</span>
+                                <div className="fee-box" style={{ display: 'flex', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', padding: '1.5rem 2rem', borderRadius: '24px', border: '1px solid var(--border)', marginBottom: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Platform Fee:</span>
+                                        <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#10b981' }}>₹1,000</span>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <Calendar size={14} color="#4361ee" />
-                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>2-4 Days</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <Calendar size={18} color="#4361ee" />
+                                        <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text)' }}>2-4 Business Days</span>
                                     </div>
                                 </div>
                                 <form onSubmit={async (e) => {
@@ -680,15 +690,15 @@ const Recommendations = () => {
                                         setIsSubmitting(false);
                                     }
                                 }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                        <div className="input-group">
-                                            <input type="text" placeholder="Full Name" required value={interestData.name} onChange={e => setInterestData({ ...interestData, name: e.target.value })} style={{ padding: '0.75rem 1rem', fontSize: '0.9rem' }} />
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', marginTop: '1rem' }}>
+                                        <div className="input-group" style={{ padding: '0.85rem 1.25rem' }}>
+                                            <input type="text" placeholder="Your Full Name" required value={interestData.name} onChange={e => setInterestData({ ...interestData, name: e.target.value })} style={{ fontSize: '0.95rem', fontWeight: 600 }} />
                                         </div>
-                                        <div className="input-group">
-                                            <input type="email" placeholder="Business Email" required value={interestData.email} onChange={e => setInterestData({ ...interestData, email: e.target.value })} style={{ padding: '0.75rem 1rem', fontSize: '0.9rem' }} />
+                                        <div className="input-group" style={{ padding: '0.85rem 1.25rem' }}>
+                                            <input type="email" placeholder="Business Email Address" required value={interestData.email} onChange={e => setInterestData({ ...interestData, email: e.target.value })} style={{ fontSize: '0.95rem', fontWeight: 600 }} />
                                         </div>
-                                        <button type="submit" className="btn btn-primary" disabled={isSubmitting} style={{ width: '100%', padding: '0.85rem', marginTop: '0.4rem', fontSize: '0.9rem' }}>
-                                            {isSubmitting ? 'Recording...' : 'Confirm Interest'}
+                                        <button type="submit" className="btn btn-primary" disabled={isSubmitting} style={{ width: '100%', padding: '1.2rem', marginTop: '1rem', fontSize: '1rem', borderRadius: '20px', fontWeight: 800, boxShadow: 'var(--blue-glow)' }}>
+                                            {isSubmitting ? 'Recording Request...' : 'Confirm Interest in Service'}
                                         </button>
                                     </div>
                                 </form>

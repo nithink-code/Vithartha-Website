@@ -88,6 +88,39 @@ const AdminDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedLead, setSelectedLead] = useState(null);
+    const [editForm, setEditForm] = useState({
+        name: '',
+        email: '',
+        serviceName: '',
+        status: ''
+    });
+
+    useEffect(() => {
+        if (selectedLead) {
+            setEditForm({
+                name: selectedLead.name || '',
+                email: selectedLead.email || '',
+                serviceName: selectedLead.serviceName || '',
+                status: selectedLead.status || ''
+            });
+        }
+    }, [selectedLead]);
+
+    const handleUpdateLead = async (e) => {
+        e.preventDefault();
+        try {
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await axios.patch(`${apiUrl}/leads/${selectedLead._id}`, editForm);
+            if (response.data) {
+                toast.success('Service request updated successfully');
+                fetchLeads();
+                setSelectedLead(null);
+            }
+        } catch (error) {
+            toast.error('Update failed');
+            console.error(error);
+        }
+    };
 
     const fetchLeads = async () => {
         try {
@@ -265,21 +298,33 @@ const AdminDashboard = () => {
                         boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                     }}
                 >
-                    <div className="admin-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+                    <div className="admin-stats-grid" style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                        gap: '1rem' 
+                    }}>
                         {[
                             { label: 'Platform Users', value: stats.total, icon: Users, color: '#4361ee' },
                             { label: 'Pending Approval', value: stats.pending, icon: Clock, color: '#f59e0b' },
                             { label: 'Fulfilled', value: stats.completed, icon: CheckCircle, color: '#10b981' },
                             { label: 'Revenue (₹)', value: stats.revenue, icon: TrendingUp, color: '#7c3aed' }
                         ].map((s, idx) => (
-                            <div key={idx} style={{ padding: '1.5rem', borderRadius: '20px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                                    <div style={{ padding: '8px', background: `${s.color}10`, borderRadius: '10px' }}>
-                                        <s.icon size={18} color={s.color} />
+                            <div key={idx} style={{ 
+                                padding: '1.2rem', 
+                                borderRadius: '20px', 
+                                background: 'rgba(255,255,255,0.01)', 
+                                border: '1px solid rgba(255,255,255,0.03)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center'
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+                                    <div style={{ padding: '6px', background: `${s.color}10`, borderRadius: '8px' }}>
+                                        <s.icon size={16} color={s.color} />
                                     </div>
-                                    <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>{s.label}</span>
+                                    <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>{s.label}</span>
                                 </div>
-                                <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#ffffff' }}>{s.value}</div>
+                                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: '#ffffff' }}>{s.value}</div>
                             </div>
                         ))}
                     </div>
@@ -291,13 +336,21 @@ const AdminDashboard = () => {
                     style={{
                         background: 'linear-gradient(135deg, #252525 0%, #151515 100%)',
                         border: '1px solid var(--border)',
-                        padding: '2.5rem',
+                        padding: 'clamp(1rem, 3vw, 2.5rem)',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                     }}
                 >
-                    <div className="admin-pipeline-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>Active Service Pipeline</h2>
-                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Showing {filteredLeads.length} entries</div>
+                    <div className="admin-pipeline-header" style={{ 
+                        display: 'flex', 
+                        flexDirection: 'row',
+                        justifyContent: 'space-between', 
+                        alignItems: 'center', 
+                        marginBottom: '1.5rem',
+                        flexWrap: 'wrap',
+                        gap: '0.5rem'
+                    }}>
+                        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>Active Service Pipeline</h2>
+                        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>Showing {filteredLeads.length} entries</div>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
@@ -311,14 +364,15 @@ const AdminDashboard = () => {
                                 className="admin-lead-row"
                                 style={{
                                     display: 'grid',
-                                    gridTemplateColumns: '2fr 1.5fr 1fr 1.2fr',
+                                    gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                                     alignItems: 'center',
-                                    padding: '1.5rem 2rem',
+                                    padding: '1rem 1.25rem',
                                     background: 'rgba(255,255,255,0.02)',
-                                    borderRadius: '20px',
+                                    borderRadius: '16px',
                                     border: '1px solid rgba(255,255,255,0.04)',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
+                                    gap: '1rem'
                                 }}
                                 onMouseEnter={e => {
                                     e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
@@ -330,41 +384,42 @@ const AdminDashboard = () => {
                                 }}
                             >
                                 {/* User Info */}
-                                <div className="admin-lead-info" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <div className="admin-lead-info" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: '0' }}>
                                     <div style={{
-                                        width: '44px', height: '44px', borderRadius: '12px',
+                                        width: '36px', height: '36px', borderRadius: '8px',
                                         background: 'linear-gradient(135deg, #4361ee, #7c3aed)',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: '1rem', fontWeight: 800, color: 'white'
+                                        fontSize: '0.9rem', fontWeight: 800, color: 'white',
+                                        flexShrink: 0
                                     }}>
                                         {lead.name?.[0]?.toUpperCase()}
                                     </div>
-                                    <div>
-                                        <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#ffffff' }}>{lead.name}</div>
-                                        <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>{lead.email}</div>
+                                    <div style={{ overflow: 'hidden' }}>
+                                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.name}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.email}</div>
                                     </div>
                                 </div>
 
                                 {/* Service Label */}
-                                <div className="admin-lead-service" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#ffffff' }}>{lead.serviceName}</div>
-                                    <div style={{ fontSize: '0.72rem', color: '#4361ee', fontWeight: 600, letterSpacing: '0.02em' }}>{lead.user?.profile?.industry || 'General Business'}</div>
+                                <div className="admin-lead-service" style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: '0' }}>
+                                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.serviceName}</div>
+                                    <div style={{ fontSize: '0.65rem', color: '#4361ee', fontWeight: 600, letterSpacing: '0.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lead.user?.profile?.industry || 'General Business'}</div>
                                 </div>
 
                                 {/* Documents Status */}
-                                <div className="admin-lead-docs" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <FileText size={16} color={(lead.documents?.length > 0) ? '#10b981' : 'rgba(255,255,255,0.2)'} />
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: (lead.documents?.length > 0) ? '#10b981' : 'rgba(255,255,255,0.4)' }}>
+                                <div className="admin-lead-docs" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                    <FileText size={14} color={(lead.documents?.length > 0) ? '#10b981' : 'rgba(255,255,255,0.2)'} />
+                                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: (lead.documents?.length > 0) ? '#10b981' : 'rgba(255,255,255,0.4)' }}>
                                         {lead.documents?.length || 0} Files
                                     </div>
                                 </div>
 
                                 {/* Actions / Status */}
-                                <div className="admin-lead-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <div className="admin-lead-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                                     {lead.status === 'Completed' ? (
                                         <div style={{
-                                            padding: '8px 16px', background: 'rgba(16,185,129,0.1)',
-                                            color: '#10b981', borderRadius: '10px', fontSize: '0.75rem',
+                                            padding: '6px 12px', background: 'rgba(16,185,129,0.1)',
+                                            color: '#10b981', borderRadius: '8px', fontSize: '0.65rem',
                                             fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em'
                                         }}>
                                             Completed
@@ -373,22 +428,23 @@ const AdminDashboard = () => {
                                         <button
                                             onClick={(e) => handleApprove(lead._id, e)}
                                             style={{
-                                                padding: '8px 20px',
+                                                padding: '6px 12px',
                                                 background: '#10b981',
                                                 border: 'none',
                                                 color: 'white',
-                                                borderRadius: '12px',
-                                                fontSize: '0.8rem',
+                                                borderRadius: '8px',
+                                                fontSize: '0.7rem',
                                                 fontWeight: 800,
                                                 cursor: 'pointer',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '8px',
-                                                boxShadow: '0 4px 12px rgba(16,185,129,0.3)',
-                                                transition: 'all 0.2s'
+                                                gap: '4px',
+                                                boxShadow: '0 4px 12px rgba(16,185,129,0.2)',
+                                                transition: 'all 0.2s',
+                                                whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            <Check size={16} /> Approve
+                                            <Check size={14} /> Approve
                                         </button>
                                     )}
                                 </div>
@@ -416,77 +472,151 @@ const AdminDashboard = () => {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="admin-modal-content"
-                            style={{
-                                width: '100%', maxWidth: '600px',
-                                background: 'linear-gradient(135deg, #151515 0%, #000000 100%)',
-                                borderRadius: '32px', border: '1px solid rgba(67, 97, 238, 0.2)',
-                                padding: '3rem', position: 'relative'
-                            }}
-                        >
-                            <button onClick={() => setSelectedLead(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}>
-                                <X size={24} />
-                            </button>
-
-                            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                                <div style={{ width: '80px', height: '80px', borderRadius: '24px', background: 'linear-gradient(135deg, #4361ee, #7c3aed)', margin: '0 auto 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 900, color: 'white', boxShadow: '0 10px 30px rgba(67, 97, 238, 0.3)' }}>
-                                    {selectedLead.name[0]}
-                                </div>
-                                <h3 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0 }}>{selectedLead.name}</h3>
-                                <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.5rem' }}>Lead Assessment & Verification</p>
-                            </div>
-
-                            <div className="admin-modal-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2.5rem' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Service</label>
-                                    <div style={{ fontWeight: 700 }}>{selectedLead.serviceName}</div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Applied On</label>
-                                    <div style={{ fontWeight: 700 }}>{new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Industry</label>
-                                    <div style={{ fontWeight: 700 }}>{selectedLead.user?.profile?.industry || 'N/A'}</div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Contact</label>
-                                    <div style={{ fontWeight: 700 }}>{selectedLead.email}</div>
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: '2.5rem' }}>
-                                <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
-                                    <FileText size={14} /> Verification Documents
-                                </label>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    {selectedLead.documents?.length > 0 ? selectedLead.documents.map((doc, idx) => (
-                                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                            <FileText size={16} color="#10b981" />
-                                            <span style={{ fontSize: '0.85rem', flex: 1 }}>{doc.name}</span>
-                                            <ArrowUpRight size={14} color="rgba(255,255,255,0.3)" />
+                              style={{
+                                  width: '100%', maxWidth: '500px',
+                                  background: 'linear-gradient(135deg, #151515 0%, #000000 100%)',
+                                  borderRadius: '28px', border: '1px solid rgba(67, 97, 238, 0.4)',
+                                  padding: '1.5rem 2rem', position: 'relative',
+                                  maxHeight: '94vh', overflowY: 'auto',
+                                  margin: 'auto', overflow: 'hidden',
+                                  outline: 'none',
+                                  boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(67, 97, 238, 0.2)'
+                              }}
+                          >
+                              <button onClick={() => setSelectedLead(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', zIndex: 1100 }}>
+                                  <X size={22} />
+                              </button>
+  
+                               <div style={{ textAlign: 'center', marginBottom: '1.2rem', marginTop: '0.1rem' }}>
+                                  <div style={{ width: '60px', height: '60px', borderRadius: '18px', background: 'linear-gradient(135deg, #4361ee, #7c3aed)', margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 900, color: 'white', boxShadow: '0 10px 25px rgba(67, 97, 238, 0.3)' }}>
+                                      {selectedLead.name[0]}
+                                  </div>
+                                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', color: '#ffffff' }}>{selectedLead.name}</h3>
+                                  <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.3rem', fontSize: '0.85rem', fontWeight: 500 }}>Lead Assessment & Verification</p>
+                              </div>
+  
+                              <form onSubmit={handleUpdateLead} style={{ padding: '0 0.5rem' }}>
+                                   <div className="admin-modal-grid" style={{ 
+                                       display: 'grid', 
+                                       gridTemplateColumns: 'repeat(2, 1fr)', 
+                                       gap: '0.8rem', 
+                                       marginBottom: '1.2rem',
+                                       padding: '1rem',
+                                       background: 'rgba(255,255,255,0.02)',
+                                       borderRadius: '18px',
+                                       border: '1px solid rgba(255,255,255,0.05)'
+                                   }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Client Name</label>
+                                        <div className="input-group" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem 0.6rem' }}>
+                                            <input 
+                                                type="text" 
+                                                value={editForm.name} 
+                                                onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                                                style={{ fontSize: '0.8rem', fontWeight: 600 }}
+                                            />
                                         </div>
-                                    )) : (
-                                        <div style={{ padding: '2rem', textAlign: 'center', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.2)', fontSize: '0.85rem' }}>
-                                            No documents uploaded by user yet.
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                                    </div>
 
-                            {selectedLead.status !== 'Completed' && (
-                                <button
-                                    onClick={() => handleApprove(selectedLead._id)}
-                                    style={{
-                                        width: '100%', padding: '1.2rem', background: '#10b981', border: 'none', color: 'white',
-                                        borderRadius: '16px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer',
-                                        boxShadow: '0 10px 30px rgba(16, 185, 129, 0.4)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                        opacity: 1
-                                    }}
-                                >
-                                    <CheckCircle size={20} /> Approve Service Request
-                                </button>
-                            )}
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Contact Email</label>
+                                        <div className="input-group" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem 0.6rem' }}>
+                                            <input 
+                                                type="email" 
+                                                value={editForm.email} 
+                                                onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+                                                style={{ fontSize: '0.8rem', fontWeight: 600 }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Service Engagement</label>
+                                        <div className="input-group" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem 0.6rem' }}>
+                                            <input 
+                                                type="text" 
+                                                value={editForm.serviceName} 
+                                                onChange={(e) => setEditForm({...editForm, serviceName: e.target.value})}
+                                                style={{ fontSize: '0.8rem', fontWeight: 600 }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Process Status</label>
+                                        <div className="input-group" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem 0.6rem' }}>
+                                            <select 
+                                                value={editForm.status} 
+                                                onChange={(e) => setEditForm({...editForm, status: e.target.value})}
+                                                style={{ 
+                                                    background: 'none', 
+                                                    border: 'none', 
+                                                    color: 'var(--text)', 
+                                                    width: '100%', 
+                                                    outline: 'none',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 600,
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <option value="Open" style={{ background: '#151515' }}>Open / Pending</option>
+                                                <option value="In Progress" style={{ background: '#151515' }}>In Progress</option>
+                                                <option value="Reviewing" style={{ background: '#151515' }}>Reviewing Documents</option>
+                                                <option value="Completed" style={{ background: '#151515' }}>Completed / Fulfilled</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Applied On</label>
+                                        <div style={{ padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, opacity: 0.7 }}>
+                                            {new Date(selectedLead.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                                        <label style={{ fontSize: '0.7rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Industry</label>
+                                        <div style={{ padding: '0.8rem 1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, opacity: 0.7 }}>
+                                            {selectedLead.user?.profile?.industry || 'N/A'}
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div style={{ marginBottom: '2.5rem', padding: '0 1rem' }}>
+                                     <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#4361ee', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1.2rem' }}>
+                                         <FileText size={16} /> Verification Documents
+                                     </label>
+                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                         {selectedLead.documents?.length > 0 ? selectedLead.documents.map((doc, idx) => (
+                                             <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 18px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                                 <FileText size={18} color="#10b981" />
+                                                 <span style={{ fontSize: '0.8rem', fontWeight: 600, flex: 1, color: '#f0f0f0' }}>{doc.name}</span>
+                                                 <ArrowUpRight size={16} color="rgba(255,255,255,0.3)" />
+                                             </div>
+                                         )) : (
+                                             <div style={{ padding: '2rem', textAlign: 'center', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
+                                                 No documents uploaded.
+                                             </div>
+                                         )}
+                                     </div>
+                                 </div>
+
+                                 <div style={{ padding: '0 1rem' }}>
+                                     <button
+                                         type="submit"
+                                         style={{
+                                             width: '100%', padding: '1.2rem', background: 'var(--v-blue)', border: 'none', color: 'white',
+                                             borderRadius: '20px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer',
+                                             boxShadow: 'var(--blue-glow)',
+                                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
+                                             transition: 'all 0.3s'
+                                         }}
+                                         onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                         onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                     >
+                                         <RefreshCw size={20} /> Update Service Engagement
+                                     </button>
+                                 </div>
+                              </form>
                         </motion.div>
                     </div>
                 )}
