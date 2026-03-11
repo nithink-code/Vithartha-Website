@@ -3,22 +3,26 @@ import { MessageSquare, X, Send, Loader2, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
-const SYSTEM_PROMPT = `You are an AI Assistant for Vithartha, a company providing services in Finance, Compliance, Advisory, Tax, and Legal domains.
-Your role is to answer user queries related to these services. Be helpful, professional, and concise.
-Available services:
-- Compliance: GST Registration, GSTR 1 & 3B Filing, GST 2B Reconciliation, GST Notice Management, E-Way Bill, GST Health Check, MCA Annual Filings, EPF & ESI Management, TDS (Payroll)
-- Tax: ITR Filing, TDS Payment, IT Notice Management, NRI Taxation, Refund Reissue
-- Finance: Virtual CFO, Virtual Accountant
-- Legal: Company Incorporation, Import & Export (IEC), Legal & Secretarial, Director Services, Share Transfer & ESOP
-- Advisory: Startup Consulting, Technical Service
+const SYSTEM_PROMPT = `You are a professional AI Business Advisor for Vithartha, a company specializing in Finance, Compliance, Advisory, Tax, and Legal services.
 
-If a user asks about pricing, state that fees start at ₹1,000 and timeline is 2-4 days, and advise them to confirm interest via the recommendations page.
-If asked something unrelated, politely steer the conversation back to Vithartha's services.`;
+Your primary goal is to assist users with queries regarding:
+- Compliance: GST Registration/Filing, MCA Annual Filings, EPF & ESI, TDS, E-Way Bill, and Health Checks.
+- Tax: ITR Filing, TDS Payments, IT Notices, NRI Taxation, and Refunds.
+- Finance: Virtual CFO and Virtual Accounting services.
+- Legal: Company Incorporation, Import/Export (IEC), Secretarial services, Share Transfer & ESOP.
+- Advisory: Startup Consulting and Technical Services.
+
+Guidelines:
+1. TONE: Maintain a high-level, professional, and sophisticated tone. Avoid informal language.
+2. FORMATTING: Use plain text only. CRITICAL: Never use double asterisks (**) for bolding or emphasis.
+3. PRICING: If asked, mention that fees start at ₹1,000 and the timeline is typically 2-4 days. Advise them to confirm interest via the recommendations page for precise quotes.
+4. SCOPE: If a user asks a general question unrelated to Vithartha, provide a very brief professional answer if possible, but immediately follow up by asking them to keep questions relevant to Vithartha's business services.
+5. CONCISENESS: Keep responses brief and focused on how Vithartha can solve the user's business needs.`;
 
 const AIAssistant = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hello! I am your Vithartha AI Assistant. How can I help you with our services today?' }
+        { role: 'assistant', content: 'Hello! I am your Vithartha AI Assistant. How can I help you with our specialized business services today?' }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -52,11 +56,14 @@ const AIAssistant = () => {
                 ]
             });
 
-            const aiReply = response.data.choices[0].message.content;
+            // Clean up the response: remove any remaining markdown bolding and trim whitespace
+            const rawReply = response.data.choices[0].message.content;
+            const aiReply = rawReply.replace(/\*\*/g, '').trim();
+            
             setMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
         } catch (error) {
             console.error('Chat error:', error);
-            const errorMessage = error.response?.data?.message || 'Sorry, I encountered an error while processing your request. Please try again later.';
+            const errorMessage = error.response?.data?.message || 'I apologize, but I am unable to process your request at this moment. Please try again shortly.';
             setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
         } finally {
             setIsLoading(false);

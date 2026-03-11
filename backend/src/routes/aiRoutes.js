@@ -7,66 +7,82 @@ router.get('/ping', (req, res) => {
     res.json({ message: 'AI Route is working' });
 });
 
-router.get('/debug-env', (req, res) => {
-    res.json({
-        OPENROUTER_API_KEY_PRESENT: !!process.env.OPENROUTER_API_KEY,
-        VITE_OPENROUTER_API_KEY_PRESENT: !!process.env.VITE_OPENROUTER_API_KEY,
-        NODE_ENV: process.env.NODE_ENV,
-        message: 'Debug route for checking environment variables. Do not expose actual keys.'
-    });
-});
-
 router.post('/chat', async (req, res) => {
+    console.log('AI Chat Request Received');
     try {
         const { messages } = req.body;
         let apiKey = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
 
-        console.log("Checking AI Config:");
-        console.log("OPENROUTER_API_KEY present:", !!process.env.OPENROUTER_API_KEY);
-        console.log("VITE_OPENROUTER_API_KEY present:", !!process.env.VITE_OPENROUTER_API_KEY);
-        console.log("NODE_ENV:", process.env.NODE_ENV);
-
         if (!apiKey) {
+            console.error('AI Config Error: OPENROUTER_API_KEY is missing');
             return res.status(500).json({
                 error: 'AI Config Error',
-                message: 'OPENROUTER_API_KEY is missing from Render environment variables.'
+                message: 'OPENROUTER_API_KEY is missing from environment variables.'
             });
         }
 
-        // Sanitize the key: clean whitespace and remove accidental 'Bearer ' prefix
+        // Sanitize the key
         apiKey = apiKey.trim();
         if (apiKey.startsWith('Bearer ')) {
             apiKey = apiKey.replace('Bearer ', '').trim();
         }
 
-        const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-            model: 'mistralai/mistral-7b-instruct:free',
-            messages: messages
-        }, {
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'HTTP-Referer': 'https://vithartha.com',
-                'X-Title': 'Vithartha AI'
+        // List of free models to try in order (Verified working slugs)
+        const modelsToTry = [
+            'openai/gpt-oss-120b:free',   // User requested
+            'google/gemini-2.0-flash:free', // Extremely fast/reliable fallback
+            'openrouter/free',            // Auto-fallback to best available free model
+            'mistralai/mistral-small-3.1-24b-instruct:free',
+            'meta-llama/llama-3.1-8b-instruct:free',
+            'meta-llama/llama-3.3-70b-instruct:free'
+        ];
+
+        let lastError = null;
+        for (const model of modelsToTry) {
+            try {
+                console.log(`Calling OpenRouter API with model: ${model}...`);
+                const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+                    model: model,
+                    messages: messages,
+                    route: 'fallback' // Explicitly tell OpenRouter to use its own fallback if supported
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'HTTP-Referer': 'https://vithartha.com',
+                        'X-Title': 'Vithartha AI'
+                    },
+                    timeout: 8000 // Slightly faster timeout to failover quicker
+                });
+
+                console.log(`OpenRouter API Response Received (Model: ${model})`);
+                return res.json(response.data);
+            } catch (error) {
+                lastError = error;
+                const statusCode = error.response?.status;
+                const errorMsg = error.response?.data?.error?.message || error.message;
+                console.warn(`Model ${model} failed [${statusCode}]: ${errorMsg}`);
+                
+                // If it's an auth error, don't bother trying other models
+                if (statusCode === 401) break;
             }
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        const errorData = error.response?.data;
-        console.error('AI Proxy Error:', errorData || error.message);
-
-        if (error.response?.status === 401) {
-            const detail = error.response?.data?.error?.message || 'Invalid or expired API key.';
-            return res.status(401).json({
-                error: 'AI API Key Rejected',
-                message: `OpenRouter Error: ${detail}`
-            });
         }
 
-        res.status(error.response?.status || 500).json({
-            error: 'AI Assistant Error',
-            message: 'Encountered an error with the AI service.',
-            debug: errorData || error.message
+        // If we reach here, all models failed
+        const statusCode = lastError.response?.status || 500;
+        const errorData = lastError.response?.data;
+        
+        console.error(`AI Proxy Final Error [${statusCode}]:`, errorData || lastError.message);
+
+        res.status(statusCode).json({
+            error: 'AI Assistant Busy',
+            message: 'Our AI is momentarily busy. Please try sending your message again in a few seconds.',
+            debug: errorData || lastError.message
+        });
+    } catch (globalError) {
+        console.error('Unexpected AI Route Error:', globalError);
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: 'An unexpected error occurred in the AI route.'
         });
     }
 });
